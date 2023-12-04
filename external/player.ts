@@ -11,6 +11,13 @@ export class Player {
   city: string;
   chapter: string;
 
+  constructor(id: number, initialScore: number) {
+    this.id = id;
+    this.initialScore = this.initialScore;
+    this.games = [];
+    this.roundScores = [];
+  }
+
   getColorImbalance(): number {
     let imbalance = 0;
 

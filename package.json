@@ -1,0 +1,24 @@
+{
+  "name": "ts-gotd",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "author": "",
+  "dependencies": {
+    "mocha": "^10.2.0"
+  },
+  "scripts": {
+    "compile": "tsc --declaration",
+    "lint": "tslint --project tsconfig.json",
+    "prepublish": "npm run compile",
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.2",
+    "@types/node": "^20.8.0",
+    "ts-node": "^10.9.1"
+  }
+}

@@ -1,4 +1,3 @@
-import { PlayerList } from "../player-list";
 import { Game } from "./game";
 import { Player } from "./player";
 
@@ -14,21 +13,13 @@ export class Tournament {
   intraStateGap: number = 0;
   intraCityGap: number = 0.6;
   intraClubGap: number = 0.75;
+  intraFamilyGap: number = 0.9;
   handicapGap: number = 0;
   totalRounds: number = 3;
-  noHandicapAboveBar: boolean = true;
   handicapType: HandicapType = HandicapType.MinusOne;
-  players: PlayerList = new PlayerList();
   komi = 6.5;
-  bar = 0;
 
   calculateHandicap(black: Player, white: Player): number {
-    if (
-      this.noHandicapAboveBar &&
-      (black.getRating() >= this.bar || white.getRating() >= this.bar)
-    )
-      return 0;
-
     let wr = white.getRating();
     let br = black.getRating();
     let diff = Math.round(wr - br);
@@ -135,8 +126,8 @@ export class Tournament {
     return this.intraClubGap;
   }
 
-  getPlayers(): PlayerList {
-    return this.players;
+  getIntraFamilyGap(): number {
+    return this.intraClubGap;
   }
 
   getTotalRounds(): number {

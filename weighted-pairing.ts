@@ -89,13 +89,15 @@ export class WeightedPairingAlgorithm {
     }
 
     if (roundNum < tournament.getTotalRounds() / 2) {
-      //	Assign penalty for intra-state/city/club play
+      //	Assign penalty for intra-state/city/club/family play
       let statePenalty =
         tournament.getIntraStateGap() * tournament.getIntraStateGap() * 10000;
       let cityPenalty =
         tournament.getIntraCityGap() * tournament.getIntraCityGap() * 10000;
       let clubPenalty =
         tournament.getIntraClubGap() * tournament.getIntraClubGap() * 10000;
+      let familyPenalty =
+        tournament.getIntraFamilyGap() * tournament.getIntraFamilyGap() * 10000;
 
       for (let i = 0; i < players.length; i++) {
         let p = players[i];
@@ -174,12 +176,11 @@ export class WeightedPairingAlgorithm {
     let matcher = new Matcher();
     let matches = matcher.weightedMatch(g, true);
 
-    let tPlayers = tournament.getPlayers();
     for (let i = 1; i < matches.length - 1; i++) {
       if (i > matches[i]) continue;
 
-      let black = tPlayers.getById(i);
-      let white = tPlayers.getById(matches[i]);
+      let black = players.find((p) => p.id === i);
+      let white = players.find((p) => p.id === matches[i]);
       newGames.push(tournament.createMatch(black, white));
     }
 
