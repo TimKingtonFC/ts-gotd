@@ -14,7 +14,7 @@ export class Tournament {
   intraCityGap: number = 0.6;
   intraClubGap: number = 0.75;
   intraFamilyGap: number = 0.9;
-  handicapGap: number = 0;
+  handicapGap: number = 0.3;
   totalRounds: number = 3;
   handicapType: HandicapType = HandicapType.MinusOne;
   komi = 6.5;
@@ -112,6 +112,14 @@ export class Tournament {
 
   getHandicapGap(): number {
     return this.handicapGap;
+  }
+
+  getHandicapType(): HandicapType {
+    return this.handicapType;
+  }
+
+  setHandicapType(type: HandicapType) {
+    this.handicapType = type;
   }
 
   getIntraStateGap(): number {

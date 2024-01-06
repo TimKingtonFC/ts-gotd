@@ -70,6 +70,7 @@ export class WeightedPairingAlgorithm {
         let prevList = p.getLastGames(1);
         if (prevList == null) continue;
 
+        // TODO: Remove float, remove scores stored by round?
         let prev = prevList[0];
         let floatDir = prev.getFloat(p);
         if (floatDir == 0) continue;
@@ -166,10 +167,9 @@ export class WeightedPairingAlgorithm {
     for (let p of players) maxId = Math.max(maxId, p.getId());
 
     let g = new Graph(maxId);
-    for (let e of this.edges) {
-      /*PlayerList plist = tournament.getPlayers();
-			System.out.println(plist.getById(e.srcId).getName() + " - " +
-					plist.getById(e.destId).getName() + ":" + e.weight);*/
+    let edges = [];
+    for (let id in this.edges) {
+      let e: Edge = this.edges[id];
       g.addEdge(e.srcId, e.destId, e.weight);
     }
 

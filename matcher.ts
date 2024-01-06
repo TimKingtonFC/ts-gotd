@@ -15,37 +15,37 @@ export class Matcher {
   NEXTEDGE: number[];
   NEXT_D: number[];
   Y: number[];
-  LAST_D: number;
-  DELTA: number;
+  LAST_D: number = 0;
+  DELTA: number = 0;
 
-  LASTEDGE: number[] = [];
+  LASTEDGE: number[] = [0, 0, 0];
 
-  DUMMYVERTEX: number;
-  DUMMYEDGE: number;
-  U: number;
-  V: number;
+  DUMMYVERTEX: number = 0;
+  DUMMYEDGE: number = 0;
+  U: number = 0;
+  V: number = 0;
 
-  newbase: number;
-  oldbase: number;
-  nextbase: number;
-  stopscan: number;
-  pairpoint: number;
-  neighbor: number;
-  nextpoint: number;
-  newlast: number;
-  newmate: number;
-  oldmate: number;
-  oldfirst: number;
-  firstmate: number;
-  secondmate;
-  f: number;
-  nextedge: number;
-  nexte: number;
-  nextu: number;
+  newbase: number = 0;
+  oldbase: number = 0;
+  nextbase: number = 0;
+  stopscan: number = 0;
+  pairpoint: number = 0;
+  neighbor: number = 0;
+  nextpoint: number = 0;
+  newlast: number = 0;
+  newmate: number = 0;
+  oldmate: number = 0;
+  oldfirst: number = 0;
+  firstmate: number = 0;
+  secondmate: number = 0;
+  f: number = 0;
+  nextedge: number = 0;
+  nexte: number = 0;
+  nextu: number = 0;
 
-  v: number;
-  i: number;
-  e: number;
+  v: number = 0;
+  i: number = 0;
+  e: number = 0;
 
   weightedMatch(gptr: Graph, maximize: boolean): number[] {
     let g: number, j: number, w: number, outcome: number;
@@ -55,18 +55,18 @@ export class Matcher {
     this.SetUp(gptr);
     this.Initialize(maximize);
 
-    outer: for (;;) {
+    outer: for (; ;) {
       /* printf("Augment #%d\n",loop++); */
-      let DELTA: number = 0;
+      this.DELTA = 0;
       for (this.v = 1; this.v <= this.U; ++this.v)
         if (this.MATE[this.v] == this.DUMMYEDGE)
           this.POINTER(this.DUMMYVERTEX, this.v, this.DUMMYEDGE);
-      for (;;) {
+      for (; ;) {
         this.i = 1;
         for (j = 2; j <= this.U; ++j)
           if (this.NEXT_D[this.i] > this.NEXT_D[j]) this.i = j;
-        DELTA = this.NEXT_D[this.i];
-        if (DELTA == this.LAST_D) break outer;
+        this.DELTA = this.NEXT_D[this.i];
+        if (this.DELTA == this.LAST_D) break outer;
         this.v = this.BASE[this.i];
         if (this.LINK[this.v] >= 0) {
           outcome = this.PAIR();
@@ -79,7 +79,7 @@ export class Matcher {
         }
       }
 
-      this.LAST_D -= DELTA;
+      this.LAST_D -= this.DELTA;
       this.SET_BOUNDS();
       g = this.OPPEDGE(this.e);
       this.REMATCH(this.BEND(this.e), g);
@@ -182,15 +182,24 @@ export class Matcher {
     }
     this.LAST_D = max_wt / 2;
 
-    this.MATE = [];
-    this.LINK = [];
-    this.BASE = [];
-    this.NEXTVTX = [];
-    this.LASTVTX = [];
-    this.Y = [];
-    this.NEXT_D = [];
-    this.NEXTEDGE = [];
-    this.NEXTPAIR = [];
+    let array = (size) => {
+      let a = [];
+      for (let i = 0; i < size; i++) {
+        a.push(0);
+      }
+      return a;
+    }
+    let allocsize = this.U + 2;
+    this.MATE = array(allocsize);
+    this.LINK = array(allocsize);
+    this.BASE = array(allocsize);
+    this.NEXTVTX = array(allocsize);
+    this.LASTVTX = array(allocsize);
+    this.Y = array(allocsize);
+    this.NEXT_D = array(allocsize);
+    this.NEXTEDGE = array(allocsize);
+    allocsize = (this.U + 2 * this.V + 2);
+    this.NEXTPAIR = array(allocsize);
 
     for (i = 1; i <= this.U + 1; ++i) {
       this.MATE[i] = this.DUMMYEDGE;
@@ -281,7 +290,7 @@ export class Matcher {
   PAIR(): number {
     let u: number, w: number, temp: number;
 
-    // printf("Pair v=%d\n",v);
+    // console.log("pair " + this.v);
 
     this.e = this.NEXTEDGE[this.v];
     while (this.SLACK(this.e) != 2 * this.DELTA) this.e = this.NEXTPAIR[this.e];

@@ -1,6 +1,10 @@
 export class Node {
   degree: number;
   adj_list: Edge;
+
+  constructor() {
+    this.degree = 0;
+  }
 }
 
 export class Edge {

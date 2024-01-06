@@ -11,11 +11,13 @@ export class Player {
   city: string;
   chapter: string;
 
-  constructor(id: number, initialScore: number) {
+  constructor(id: number, initialScore: number, rating: number) {
     this.id = id;
-    this.initialScore = this.initialScore;
+    this.initialScore = initialScore;
     this.games = [];
     this.roundScores = [];
+    this.score = initialScore;
+    this.rating = rating;
   }
 
   getColorImbalance(): number {
@@ -49,6 +51,7 @@ export class Player {
     let g = this.games[round];
     if (g != null) return g;
 
+    // TODO: Remove komi?
     g = new Game(this, this, 0, 0);
     g.setRoundNum(round);
     g.setResult(Result.NoGame);
