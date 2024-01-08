@@ -69,20 +69,20 @@ export class Tournament {
       if (lastTwo != null) {
         mustSwitch =
           mustSwitch ||
-          (lastTwo[0].getBlack() == black && lastTwo[1].getBlack() == black);
+          (lastTwo[0].getBlack() == black.id && lastTwo[1].getBlack() == black.id);
         cantSwitch =
           cantSwitch ||
-          (lastTwo[0].getWhite() == black && lastTwo[1].getWhite() == black);
+          (lastTwo[0].getWhite() == black.id && lastTwo[1].getWhite() == black.id);
       }
 
       lastTwo = white.getLastGames(2);
       if (lastTwo != null) {
         mustSwitch =
           mustSwitch ||
-          (lastTwo[0].getWhite() == white && lastTwo[1].getWhite() == white);
+          (lastTwo[0].getWhite() == white.id && lastTwo[1].getWhite() == white.id);
         cantSwitch =
           cantSwitch ||
-          (lastTwo[0].getBlack() == white && lastTwo[1].getBlack() == white);
+          (lastTwo[0].getBlack() == white.id && lastTwo[1].getBlack() == white.id);
       }
 
       //	Possibly switch to maintain 50-50 ratio
@@ -107,7 +107,7 @@ export class Tournament {
       }
     }
 
-    return new Game(black, white, handicap, k);
+    return new Game(black.id, white.id, handicap, k);
   }
 
   getHandicapGap(): number {

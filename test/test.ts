@@ -2,7 +2,7 @@ import assert = require("assert");
 import { Player } from "../external/player";
 import { HandicapType, Tournament } from "../external/tournament";
 import { WeightedPairingAlgorithm } from "../weighted-pairing";
-import { Game } from "../external/game";
+import { Game, Result } from "../external/game";
 import exp = require("constants");
 
 type ExpectedMatch = {
@@ -18,7 +18,13 @@ function p(id: number, rating?: number): Player {
   return new Player(id, 0, rating);
 }
 
-function g(p1: number, p2: number, h: number): ExpectedMatch {
+function g(bid: number, wid: number, res: Result): Game {
+  let game = new Game(bid, wid, 0, 0);
+  game.setResult(res);
+  return game;
+}
+
+function m(p1: number, p2: number, h: number): ExpectedMatch {
   return { p1: p1, p2: p2, h: h };
 }
 
@@ -30,7 +36,7 @@ function checkPairing(actual: Game[], expected: ExpectedMatch[]) {
       act.handicap = 0;
     }
     let exp = expected[i];
-    assert.deepEqual({ p1: act.black.id, p2: act.white.id, h: act.handicap }, exp);
+    assert.deepEqual({ p1: act.black, p2: act.white, h: act.handicap }, exp);
   }
 }
 
@@ -41,8 +47,8 @@ describe("Pairings", () => {
     let t = new Tournament();
 
     let players = [p(1), p(2)];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 2, 0)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 2, 0)]);
   });
 
   it("should set handicaps correctly", () => {
@@ -52,40 +58,40 @@ describe("Pairings", () => {
 
     // Make white stronger player, default handicap is diff-1.
     let players = [p(1, -1), p(2, -8)];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(2, 1, 6)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(2, 1, 6)]);
 
     newGames = [];
     players = [p(1, -8), p(2, -1)];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 2, 6)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 2, 6)]);
 
     // dan vs kyu
     newGames = [];
     players = [p(1, -2.5), p(2, 1.5)];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 2, 1)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 2, 1)]);
 
     // Full handicap
     t.setHandicapType(HandicapType.FullHandicap);
     players = [p(1, -8), p(2, -1)];
     newGames = [];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 2, 7)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 2, 7)]);
 
     // Diff - 2
     t.setHandicapType(HandicapType.MinusTwo);
     players = [p(1, -8), p(2, -1)];
     newGames = [];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 2, 5)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 2, 5)]);
 
     // No handicap
     t.setHandicapType(HandicapType.None);
     players = [p(1, -8), p(2, -1)];
     newGames = [];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 2, 0)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 2, 0)]);
   });
 
 
@@ -95,8 +101,8 @@ describe("Pairings", () => {
     let t = new Tournament();
 
     let players = [p(1), p(2), p(3), p(4), p(5), p(6)];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 4, 0), g(2, 5, 0), g(3, 6, 0)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 4, 0), m(2, 5, 0), m(3, 6, 0)]);
   });
 
   it("should minimize handicaps", () => {
@@ -105,8 +111,8 @@ describe("Pairings", () => {
     let t = new Tournament();
 
     let players = [p(1, 5), p(2, 5), p(3, 3), p(4, 3), p(5, 7), p(6, 7)];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(1, 2, 0), g(3, 4, 0), g(5, 6, 0)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 2, 0), m(3, 4, 0), m(5, 6, 0)]);
   });
 
   it("should handle sparse ids", () => {
@@ -115,8 +121,27 @@ describe("Pairings", () => {
     let t = new Tournament();
 
     let players = [p(11, 5), p(22, 5), p(33, 3), p(44, 3), p(55, 7), p(66, 7)];
-    assert(alg.doPairing(t, players, 0, newGames));
-    checkPairing(newGames, [g(11, 22, 0), g(33, 44, 0), g(55, 66, 0)]);
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(11, 22, 0), m(33, 44, 0), m(55, 66, 0)]);
+  });
+
+  it("shouldn't allow replays", () => {
+    let alg = new WeightedPairingAlgorithm();
+    let newGames = [];
+    let t = new Tournament();
+
+    let players = [p(1, 5), p(2, 5), p(3, 3), p(4, 3), p(5, 8), p(6, 8)];
+    let games = [
+      [g(1, 2, Result.BlackWin), g(3, 4, Result.BlackWin), g(5, 6, Result.WhiteWin)]
+    ];
+    assert(alg.doPairing(t, players, games, newGames));
+    checkPairing(newGames, [m(3, 1, 1), m(2, 6, 2), m(4, 5, 4)]);
+
+    players = [p(1, 5), p(2, 5), p(3, 3), p(4, 3), p(5, 8), p(6, 8)];
+    games.push([g(3, 1, Result.WhiteWin), g(2, 6, Result.WhiteWin), g(4, 5, Result.BlackWin)]);
+    newGames = [];
+    assert(alg.doPairing(t, players, games, newGames));
+    checkPairing(newGames, [m(1, 6, 2), m(4, 2, 1), m(3, 5, 4)]);
   });
 
   // TODO: Fix todos

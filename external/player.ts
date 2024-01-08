@@ -20,13 +20,39 @@ export class Player {
     this.rating = rating;
   }
 
+  addGame(g: Game) {
+    this.games.push(g);
+  }
+
+  countWin(roundNum: number) {
+    this.fillScores(roundNum);
+    this.score++;
+    this.roundScores.push(this.score);
+  }
+
+  countDraw(roundNum: number) {
+    this.fillScores(roundNum);
+    this.score += 0.5;
+    this.roundScores.push(this.score);
+  }
+
+  countVoluntaryBye(roundNum: number) {
+    this.fillScores(roundNum);
+    this.roundScores.push(this.score);
+  }
+
+  fillScores(roundNum: number) {
+    while (this.roundScores.length < roundNum)
+      this.roundScores.push(this.score);
+  }
+
   getColorImbalance(): number {
     let imbalance = 0;
 
     for (let g of this.games) {
       if (!g.isBye()) {
-        if (g.getBlack() == this) imbalance++;
-        else if (g.getWhite() == this) imbalance--;
+        if (g.getBlack() == this.id) imbalance++;
+        else if (g.getWhite() == this.id) imbalance--;
         else throw "Error";
       }
     }
@@ -52,7 +78,7 @@ export class Player {
     if (g != null) return g;
 
     // TODO: Remove komi?
-    g = new Game(this, this, 0, 0);
+    g = new Game(this.id, this.id, 0, 0);
     g.setRoundNum(round);
     g.setResult(Result.NoGame);
     return g;
@@ -73,7 +99,7 @@ export class Player {
 
   hasPlayed(p: Player): boolean {
     for (let g of this.games) {
-      if (g.getBlack() == p || g.getWhite() == p) return true;
+      if (g.getBlack() == p.id || g.getWhite() == p.id) return true;
     }
 
     return false;

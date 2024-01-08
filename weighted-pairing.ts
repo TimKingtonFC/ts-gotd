@@ -1,16 +1,73 @@
-import { Game } from "./external/game";
+import { Game, Result } from "./external/game";
 import { Player } from "./external/player";
 import { Tournament } from "./external/tournament";
 import { Graph } from "./graph";
 import { Matcher } from "./matcher";
 
 export class WeightedPairingAlgorithm {
+  public addGames(players: Player[], games: Game[][]) {
+    let playersById = new Map<Number, Player>();
+    for (let p of players) {
+      playersById.set(p.id, p);
+    }
+
+    for (let [roundNum, roundGames] of games.entries()) {
+      for (let g of roundGames) {
+        let black = playersById.get(g.getBlack());
+        if (!black) {
+          throw new Error(`Couldn't find black player from game ${JSON.stringify(g)}`)
+        }
+
+        let white = playersById.get(g.getWhite());
+        if (!white) {
+          throw new Error(`Couldn't find white player in game ${JSON.stringify(g)}`)
+        }
+
+        black.addGame(g);
+        white.addGame(g);
+
+        switch (g.getResult()) {
+          case Result.BlackWin:
+          case Result.WhiteForfeit:
+            black.countWin(roundNum);
+            break;
+          case Result.WhiteWin:
+          case Result.BlackForfeit:
+            white.countWin(roundNum);
+            break;
+          case Result.Draw:
+            white.countDraw(roundNum);
+            black.countDraw(roundNum);
+            break;
+          case Result.InvoluntaryBye:
+            black.countWin(roundNum);
+            break;
+          case Result.DoubleForfeit:
+            black.countVoluntaryBye(roundNum);
+            white.countVoluntaryBye(roundNum);
+            break;
+          case Result.DoubleLoss:
+          case Result.Void:
+          case Result.VoluntaryBye:
+            black.countVoluntaryBye(roundNum);
+            break;
+          case Result.NoGame:
+          case Result.Unknown:
+            break;
+        }
+      }
+    }
+  }
+
   public doPairing(
     tournament: Tournament,
     players: Player[],
-    roundNum: number,
+    games: Game[][],
     newGames: Game[]
   ): boolean {
+    let roundNum = games.length;
+    this.addGames(players, games);
+
     players.sort(scoreAndRatingComparator);
 
     this.createEdges(players);
@@ -35,8 +92,8 @@ export class WeightedPairingAlgorithm {
 
         let prev = lastTwo[0];
         let twoBack = lastTwo[1];
-        let pMustBeBlack = prev.getWhite() == p && twoBack.getWhite() == p;
-        let pMustBeWhite = prev.getBlack() == p && twoBack.getBlack() == p;
+        let pMustBeBlack = prev.getWhite() == p.id && twoBack.getWhite() == p.id;
+        let pMustBeWhite = prev.getBlack() == p.id && twoBack.getBlack() == p.id;
 
         for (let j = i + 1; j < players.length; j++) {
           let p2 = players[j];
@@ -45,8 +102,8 @@ export class WeightedPairingAlgorithm {
 
           prev = lastTwo[0];
           twoBack = lastTwo[1];
-          let p2MustBeBlack = prev.getWhite() == p2 && twoBack.getWhite() == p2;
-          let p2MustBeWhite = prev.getBlack() == p2 && twoBack.getBlack() == p2;
+          let p2MustBeBlack = prev.getWhite() == p2.id && twoBack.getWhite() == p2.id;
+          let p2MustBeWhite = prev.getBlack() == p2.id && twoBack.getBlack() == p2.id;
 
           if (
             (pMustBeBlack && p2MustBeBlack) ||
@@ -72,7 +129,7 @@ export class WeightedPairingAlgorithm {
 
         // TODO: Remove float, remove scores stored by round?
         let prev = prevList[0];
-        let floatDir = prev.getFloat(p);
+        let floatDir = prev.getFloat(p, players);
         if (floatDir == 0) continue;
 
         for (let j = 0; j < players.length; j++) {
