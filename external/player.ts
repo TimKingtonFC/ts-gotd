@@ -10,6 +10,7 @@ export class Player {
   state: string;
   city: string;
   chapter: string;
+  family: string;
 
   constructor(id: number, initialScore: number, rating: number) {
     this.id = id;
@@ -77,8 +78,7 @@ export class Player {
     let g = this.games[round];
     if (g != null) return g;
 
-    // TODO: Remove komi?
-    g = new Game(this.id, this.id, 0, 0);
+    g = new Game(this.id, this.id, 0);
     g.setRoundNum(round);
     g.setResult(Result.NoGame);
     return g;
@@ -123,5 +123,9 @@ export class Player {
 
   getChapter(): string {
     return this.chapter;
+  }
+
+  getFamily(): string {
+    return this.family;
   }
 }

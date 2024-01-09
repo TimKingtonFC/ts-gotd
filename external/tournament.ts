@@ -11,13 +11,12 @@ export enum HandicapType {
 export class Tournament {
   balanceColors: boolean = true;
   intraStateGap: number = 0;
-  intraCityGap: number = 0.6;
-  intraClubGap: number = 0.75;
-  intraFamilyGap: number = 0.9;
+  intraCityGap: number = 0.36;
+  intraClubGap: number = 0.56;
+  intraFamilyGap: number = 0.81;
   handicapGap: number = 0.3;
   totalRounds: number = 3;
   handicapType: HandicapType = HandicapType.MinusOne;
-  komi = 6.5;
 
   calculateHandicap(black: Player, white: Player): number {
     let wr = white.getRating();
@@ -54,11 +53,6 @@ export class Tournament {
       black = white;
       white = tmp;
     }
-
-    let k: number;
-    if (handicap == 0) k = this.komi;
-    else if (handicap == 1) k = -0.5;
-    else k = 0.5;
 
     if (this.balanceColors && handicap == 0) {
       let mustSwitch = false;
@@ -107,7 +101,7 @@ export class Tournament {
       }
     }
 
-    return new Game(black.id, white.id, handicap, k);
+    return new Game(black.id, white.id, handicap);
   }
 
   getHandicapGap(): number {

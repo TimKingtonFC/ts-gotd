@@ -19,7 +19,7 @@ function p(id: number, rating?: number): Player {
 }
 
 function g(bid: number, wid: number, res: Result): Game {
-  let game = new Game(bid, wid, 0, 0);
+  let game = new Game(bid, wid, 0);
   game.setResult(res);
   return game;
 }
@@ -144,5 +144,37 @@ describe("Pairings", () => {
     checkPairing(newGames, [m(1, 6, 2), m(4, 2, 1), m(3, 5, 4)]);
   });
 
+  it("should avoid same city, club, family", () => {
+    let alg = new WeightedPairingAlgorithm();
+    let t = new Tournament();
+
+    let players = [p(1), p(2), p(3), p(4), p(5), p(6)];
+    players[0].city = "Columbus";
+    players[3].city = "Columbus";
+    let newGames = [];
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 5, 0), m(2, 4, 0), m(3, 6, 0)]);
+
+    players = [p(1), p(2), p(3), p(4), p(5), p(6)];
+    players[0].chapter = "Tesuji";
+    players[3].chapter = "Tesuji";
+    newGames = [];
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 5, 0), m(2, 4, 0), m(3, 6, 0)]);
+
+    players = [p(1), p(2), p(3), p(4), p(5), p(6)];
+    players[0].family = "Smith";
+    players[3].family = "Smith";
+    newGames = [];
+    assert(alg.doPairing(t, players, [], newGames));
+    checkPairing(newGames, [m(1, 5, 0), m(2, 4, 0), m(3, 6, 0)]);
+  });
+
   // TODO: Fix todos
+
+  // score diff = 10000 * diff^2
+  // avoid same color three in a row = 15000
+  // avoid playing someone with a lower/higher score twice in a row = 17500
+  // hc = h^2 * 10000 * hcgap(0.3)
+  // other gaps g^2 * 1000
 });

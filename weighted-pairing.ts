@@ -24,7 +24,9 @@ export class WeightedPairingAlgorithm {
         }
 
         black.addGame(g);
-        white.addGame(g);
+        if (white != black) {
+          white.addGame(g);
+        }
 
         switch (g.getResult()) {
           case Result.BlackWin:
@@ -127,7 +129,6 @@ export class WeightedPairingAlgorithm {
         let prevList = p.getLastGames(1);
         if (prevList == null) continue;
 
-        // TODO: Remove float, remove scores stored by round?
         let prev = prevList[0];
         let floatDir = prev.getFloat(p, players);
         if (floatDir == 0) continue;
@@ -149,13 +150,13 @@ export class WeightedPairingAlgorithm {
     if (roundNum < tournament.getTotalRounds() / 2) {
       //	Assign penalty for intra-state/city/club/family play
       let statePenalty =
-        tournament.getIntraStateGap() * tournament.getIntraStateGap() * 10000;
+        tournament.getIntraStateGap() * 10000;
       let cityPenalty =
-        tournament.getIntraCityGap() * tournament.getIntraCityGap() * 10000;
+        tournament.getIntraCityGap() * 10000;
       let clubPenalty =
-        tournament.getIntraClubGap() * tournament.getIntraClubGap() * 10000;
+        tournament.getIntraClubGap() * 10000;
       let familyPenalty =
-        tournament.getIntraFamilyGap() * tournament.getIntraFamilyGap() * 10000;
+        tournament.getIntraFamilyGap() * 10000;
 
       for (let i = 0; i < players.length; i++) {
         let p = players[i];
@@ -166,13 +167,17 @@ export class WeightedPairingAlgorithm {
           let state = p.getState();
           let city = p.getCity();
           let club = p.getChapter();
+          let family = p.getFamily();
           let state2 = p2.getState();
           let city2 = p2.getCity();
           let club2 = p2.getChapter();
+          let family2 = p2.getFamily();
 
-          if (club && club.toLowerCase() !== "none" && club === club2)
+          if (family && family === family2) {
+            e.weight -= familyPenalty;
+          } else if (club && club.toLowerCase() !== "none" && club === club2)
             e.weight -= clubPenalty;
-          else if (state && state === state2) {
+          else if (state === state2) {
             if (city && city === city2) e.weight -= cityPenalty;
             else e.weight -= statePenalty;
           }

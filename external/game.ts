@@ -19,15 +19,13 @@ export class Game {
   black: number;
   white: number;
   handicap: number;
-  komi: number;
   roundNum: number;
   result: Result;
 
-  constructor(b: number, w: number, h: number, k: number) {
+  constructor(b: number, w: number, h: number) {
     this.black = b;
     this.white = w;
     this.handicap = h;
-    this.komi = k;
   }
 
   getFloat(p: Player, players: Player[]): number {
