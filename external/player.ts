@@ -9,7 +9,7 @@ export class Player {
   score: number;
   state: string;
   city: string;
-  chapter: string;
+  club: string;
   family: string;
 
   constructor(id: number, initialScore: number, rating: number) {
@@ -52,8 +52,8 @@ export class Player {
 
     for (let g of this.games) {
       if (!g.isBye()) {
-        if (g.getBlack() == this.id) imbalance++;
-        else if (g.getWhite() == this.id) imbalance--;
+        if (g.getBlackId() == this.id) imbalance++;
+        else if (g.getWhiteId() == this.id) imbalance--;
         else throw "Error";
       }
     }
@@ -99,7 +99,7 @@ export class Player {
 
   hasPlayed(p: Player): boolean {
     for (let g of this.games) {
-      if (g.getBlack() == p.id || g.getWhite() == p.id) return true;
+      if (g.getBlackId() == p.id || g.getWhiteId() == p.id) return true;
     }
 
     return false;
@@ -117,15 +117,31 @@ export class Player {
     return this.state;
   }
 
+  setState(state: string) {
+    this.state = state;
+  }
+
   getCity(): string {
     return this.city;
   }
 
-  getChapter(): string {
-    return this.chapter;
+  setCity(city: string) {
+    this.city = city;
+  }
+
+  getClub(): string {
+    return this.club;
+  }
+
+  setClub(chapter: string) {
+    this.club = chapter;
   }
 
   getFamily(): string {
     return this.family;
+  }
+
+  setFamily(family: string) {
+    this.family = family;
   }
 }

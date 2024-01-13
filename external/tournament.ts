@@ -63,20 +63,20 @@ export class Tournament {
       if (lastTwo != null) {
         mustSwitch =
           mustSwitch ||
-          (lastTwo[0].getBlack() == black.id && lastTwo[1].getBlack() == black.id);
+          (lastTwo[0].getBlackId() == black.id && lastTwo[1].getBlackId() == black.id);
         cantSwitch =
           cantSwitch ||
-          (lastTwo[0].getWhite() == black.id && lastTwo[1].getWhite() == black.id);
+          (lastTwo[0].getWhiteId() == black.id && lastTwo[1].getWhiteId() == black.id);
       }
 
       lastTwo = white.getLastGames(2);
       if (lastTwo != null) {
         mustSwitch =
           mustSwitch ||
-          (lastTwo[0].getWhite() == white.id && lastTwo[1].getWhite() == white.id);
+          (lastTwo[0].getWhiteId() == white.id && lastTwo[1].getWhiteId() == white.id);
         cantSwitch =
           cantSwitch ||
-          (lastTwo[0].getBlack() == white.id && lastTwo[1].getBlack() == white.id);
+          (lastTwo[0].getBlackId() == white.id && lastTwo[1].getBlackId() == white.id);
       }
 
       //	Possibly switch to maintain 50-50 ratio
@@ -107,36 +107,56 @@ export class Tournament {
   getHandicapGap(): number {
     return this.handicapGap;
   }
+  setHandicapGap(gap: number) {
+    this.handicapGap = gap;
+  }
 
   getHandicapType(): HandicapType {
     return this.handicapType;
   }
-
-  setHandicapType(type: HandicapType) {
-    this.handicapType = type;
+  setHandicapType(handicapType: HandicapType) {
+    this.handicapType = handicapType;
   }
 
   getIntraStateGap(): number {
     return this.intraStateGap;
   }
+  setIntraStateGap(gap: number) {
+    this.intraStateGap = gap;
+  }
 
   getIntraCityGap(): number {
     return this.intraCityGap;
+  }
+  setIntraCityGap(gap: number) {
+    this.intraCityGap = gap;
   }
 
   getIntraClubGap(): number {
     return this.intraClubGap;
   }
+  setIntraClubGap(gap: number) {
+    this.intraClubGap = gap;
+  }
 
   getIntraFamilyGap(): number {
     return this.intraClubGap;
+  }
+  setIntraFamilyGap(gap: number) {
+    this.intraFamilyGap = gap;
   }
 
   getTotalRounds(): number {
     return this.totalRounds;
   }
+  setTotalRounds(totalRounds: number) {
+    this.totalRounds = totalRounds;
+  }
 
   isBalanceColors(): boolean {
     return this.balanceColors;
+  }
+  setBalanceColors(balanceColors: boolean) {
+    this.balanceColors = balanceColors;
   }
 }

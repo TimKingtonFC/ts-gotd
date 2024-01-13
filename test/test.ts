@@ -36,7 +36,7 @@ function checkPairing(actual: Game[], expected: ExpectedMatch[]) {
       act.handicap = 0;
     }
     let exp = expected[i];
-    assert.deepEqual({ p1: act.black, p2: act.white, h: act.handicap }, exp);
+    assert.deepEqual({ p1: act.blackId, p2: act.whiteId, h: act.handicap }, exp);
   }
 }
 
@@ -156,8 +156,8 @@ describe("Pairings", () => {
     checkPairing(newGames, [m(1, 5, 0), m(2, 4, 0), m(3, 6, 0)]);
 
     players = [p(1), p(2), p(3), p(4), p(5), p(6)];
-    players[0].chapter = "Tesuji";
-    players[3].chapter = "Tesuji";
+    players[0].club = "Tesuji";
+    players[3].club = "Tesuji";
     newGames = [];
     assert(alg.doPairing(t, players, [], newGames));
     checkPairing(newGames, [m(1, 5, 0), m(2, 4, 0), m(3, 6, 0)]);
@@ -170,11 +170,37 @@ describe("Pairings", () => {
     checkPairing(newGames, [m(1, 5, 0), m(2, 4, 0), m(3, 6, 0)]);
   });
 
-  // TODO: Fix todos
+  it("should be able to pair example tournament", () => {
+    let alg = new WeightedPairingAlgorithm();
+    let t = new Tournament();
+    t.setHandicapType(HandicapType.FullHandicap);
 
-  // score diff = 10000 * diff^2
-  // avoid same color three in a row = 15000
-  // avoid playing someone with a lower/higher score twice in a row = 17500
-  // hc = h^2 * 10000 * hcgap(0.3)
-  // other gaps g^2 * 1000
+    // Create player list.
+    // new Player(id, initialScore, rating)
+    let p1 = new Player(1, 0, 6.5); // 6d
+    let p2 = new Player(2, 0, 5.5); // 5d
+    let p3 = new Player(3, 0, 2.3); // 2d
+    let p4 = new Player(4, 0, 2.1); // 2d
+    let p5 = new Player(5, 0, 1.7); // 1d
+    let p6 = new Player(6, 0, 1.1); // 1d
+    let players = [p1, p2, p3, p4, p5, p6];
+
+    // Create games.
+    let round1Games = [
+      // new Game(blackId, whiteId, handicap, result)
+      new Game(2, 1, 1, Result.BlackWin),
+      new Game(3, 4, 0, Result.BlackWin),
+      new Game(5, 6, 0, Result.WhiteWin)
+    ];
+    let round2Games = [
+      new Game(3, 1, 0, Result.WhiteWin),
+      new Game(2, 6, 0, Result.WhiteWin),
+      new Game(4, 5, 0, Result.BlackWin)
+    ];
+    let games = [round1Games, round2Games];
+
+    // Create array to hold new games, and do pairing.
+    let newGames = [];
+    assert(alg.doPairing(t, players, games, newGames));
+  });
 });

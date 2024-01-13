@@ -16,31 +16,31 @@ export enum Result {
 }
 
 export class Game {
-  black: number;
-  white: number;
+  blackId: number;
+  whiteId: number;
   handicap: number;
   roundNum: number;
   result: Result;
 
-  constructor(b: number, w: number, h: number) {
-    this.black = b;
-    this.white = w;
-    this.handicap = h;
+  constructor(blackId: number, whiteId: number, handicap: number, result?: Result) {
+    this.blackId = blackId;
+    this.whiteId = whiteId;
+    this.handicap = handicap;
+    this.result = result;
   }
 
   getFloat(p: Player, players: Player[]): number {
-    let black = players.find(p => p.id == this.black);
-    let white = players.find(p => p.id == this.white);
+    let black = players.find(p => p.id == this.blackId);
+    let white = players.find(p => p.id == this.whiteId);
 
     let scoreDiff = Math.floor(
       white.getScore(this.roundNum - 1) -
       black.getScore(this.roundNum - 1)
     );
-    if (p.id == this.white) scoreDiff = -scoreDiff;
+    if (p.id == this.whiteId) scoreDiff = -scoreDiff;
     return scoreDiff;
   }
 
-  // TODO: Document how to make a bye
   isBye(): boolean {
     return (
       this.result == Result.InvoluntaryBye ||
@@ -49,12 +49,12 @@ export class Game {
     );
   }
 
-  getWhite(): number {
-    return this.white;
+  getWhiteId(): number {
+    return this.whiteId;
   }
 
-  getBlack(): number {
-    return this.black;
+  getBlackId(): number {
+    return this.blackId;
   }
 
   getResult(): Result {

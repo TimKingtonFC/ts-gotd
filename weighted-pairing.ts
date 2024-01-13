@@ -13,12 +13,12 @@ export class WeightedPairingAlgorithm {
 
     for (let [roundNum, roundGames] of games.entries()) {
       for (let g of roundGames) {
-        let black = playersById.get(g.getBlack());
+        let black = playersById.get(g.getBlackId());
         if (!black) {
           throw new Error(`Couldn't find black player from game ${JSON.stringify(g)}`)
         }
 
-        let white = playersById.get(g.getWhite());
+        let white = playersById.get(g.getWhiteId());
         if (!white) {
           throw new Error(`Couldn't find white player in game ${JSON.stringify(g)}`)
         }
@@ -94,8 +94,8 @@ export class WeightedPairingAlgorithm {
 
         let prev = lastTwo[0];
         let twoBack = lastTwo[1];
-        let pMustBeBlack = prev.getWhite() == p.id && twoBack.getWhite() == p.id;
-        let pMustBeWhite = prev.getBlack() == p.id && twoBack.getBlack() == p.id;
+        let pMustBeBlack = prev.getWhiteId() == p.id && twoBack.getWhiteId() == p.id;
+        let pMustBeWhite = prev.getBlackId() == p.id && twoBack.getBlackId() == p.id;
 
         for (let j = i + 1; j < players.length; j++) {
           let p2 = players[j];
@@ -104,8 +104,8 @@ export class WeightedPairingAlgorithm {
 
           prev = lastTwo[0];
           twoBack = lastTwo[1];
-          let p2MustBeBlack = prev.getWhite() == p2.id && twoBack.getWhite() == p2.id;
-          let p2MustBeWhite = prev.getBlack() == p2.id && twoBack.getBlack() == p2.id;
+          let p2MustBeBlack = prev.getWhiteId() == p2.id && twoBack.getWhiteId() == p2.id;
+          let p2MustBeWhite = prev.getBlackId() == p2.id && twoBack.getBlackId() == p2.id;
 
           if (
             (pMustBeBlack && p2MustBeBlack) ||
@@ -166,11 +166,11 @@ export class WeightedPairingAlgorithm {
 
           let state = p.getState();
           let city = p.getCity();
-          let club = p.getChapter();
+          let club = p.getClub();
           let family = p.getFamily();
           let state2 = p2.getState();
           let city2 = p2.getCity();
-          let club2 = p2.getChapter();
+          let club2 = p2.getClub();
           let family2 = p2.getFamily();
 
           if (family && family === family2) {
@@ -252,7 +252,6 @@ export class WeightedPairingAlgorithm {
   doSlidePairing(groups: Player[][]) {
     for (let i = 0; i < groups.length; i++) {
       let group = groups[i];
-      // TODO: truncate, other int assumptions?
       let split = group.length / 2;
 
       for (let j = 0; j < group.length; j++) {
